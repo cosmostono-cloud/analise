@@ -151,6 +151,8 @@ const Index = () => {
                     </SelectTrigger>
                     <SelectContent className="bg-slate-900 border-white/10 text-white">
                       <SelectItem value="M1">M1 (1 Minuto)</SelectItem>
+                      <SelectItem value="M2">M2 (2 Minutos)</SelectItem>
+                      <SelectItem value="M3">M3 (3 Minutos)</SelectItem>
                       <SelectItem value="M5">M5 (5 Minutos)</SelectItem>
                       <SelectItem value="M15">M15 (15 Minutos)</SelectItem>
                       <SelectItem value="M30">M30 (30 Minutos)</SelectItem>
