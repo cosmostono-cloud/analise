@@ -5,8 +5,7 @@ import Header from '@/components/Header';
 import AnalysisResult from '@/components/AnalysisResult';
 import OperationalRules from '@/components/OperationalRules';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ImagePlus, LayoutDashboard, History, Settings, MessageSquare, X, Sparkles } from 'lucide-react';
+import { ImagePlus, LayoutDashboard, History, MessageSquare, X, Sparkles } from 'lucide-react';
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { showSuccess, showError } from '@/utils/toast';
 
@@ -45,12 +44,19 @@ const Index = () => {
     setTimeout(() => {
       setAnalysis({
         existeEntrada: true,
+        direcao: 'compra',
         tipoCenario: 'rompimento',
         justificativa: 'O preço apresentou um fechamento nítido acima da zona de resistência anterior. O candle de rompimento possui corpo expressivo e pouco pavio superior, indicando pressão compradora. Existe vácuo livre significativo até o próximo nível de oferta.',
         entrada: 'Nível de fechamento do candle de rompimento',
         stop: 'Abaixo do último fundo ascendente (Stop Estrutural)',
         alvo: '75% da projeção do vácuo livre até a próxima barreira',
-        contexto: 'Transição de lateralidade para tendência de alta confirmada por pivô.'
+        contexto: 'Transição de lateralidade para tendência de alta confirmada por pivô.',
+        checklist: {
+          fechamentoCorpo: true,
+          vacuoLivre: true,
+          stopEstrutural: true,
+          tendenciaConfirmada: true
+        }
       });
       setIsAnalyzing(false);
       showSuccess("Análise estrutural concluída com sucesso!");
@@ -70,7 +76,7 @@ const Index = () => {
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
-          {/* Sidebar Esquerda: Regras e Mindset */}
+          {/* Sidebar Esquerda */}
           <div className="lg:col-span-4 space-y-8">
             <div className="space-y-2">
               <h2 className="text-3xl font-black text-white tracking-tighter">OPERACIONAL</h2>
@@ -92,7 +98,7 @@ const Index = () => {
             </nav>
           </div>
 
-          {/* Área Principal: Upload e Resultados */}
+          {/* Área Principal */}
           <div className="lg:col-span-8 space-y-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="space-y-2">

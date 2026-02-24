@@ -2,14 +2,15 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, CheckCircle2, Zap, Target, Ban } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Zap, Target, Ban, MousePointer2, Layers } from 'lucide-react';
 
 const OperationalRules = () => {
   const rules = [
     { icon: <Ban className="text-red-500" />, text: "Range é pique-esconde: Não entre.", color: "border-red-500/20 bg-red-500/5" },
     { icon: <CheckCircle2 className="text-emerald-500" />, text: "Pavio não é fechamento. Espere o corpo.", color: "border-emerald-500/20 bg-emerald-500/5" },
     { icon: <Zap className="text-amber-500" />, text: "Sem vácuo livre, não existe trade.", color: "border-amber-500/20 bg-amber-500/5" },
-    { icon: <Target className="text-blue-500" />, text: "Alvo é 70-80% do vácuo. Não seja ganancioso.", color: "border-blue-500/20 bg-blue-500/5" },
+    { icon: <Layers className="text-blue-500" />, text: "Alvo é 70-80% do vácuo. Não seja ganancioso.", color: "border-blue-500/20 bg-blue-500/5" },
+    { icon: <MousePointer2 className="text-purple-500" />, text: "Gatilho: Fechamento fora da zona de briga.", color: "border-purple-500/20 bg-purple-500/5" },
   ];
 
   return (
@@ -37,6 +38,13 @@ const OperationalRules = () => {
           </div>
         </CardContent>
       </Card>
+
+      <div className="p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10">
+        <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">Dica de Ouro</h4>
+        <p className="text-xs text-slate-400 leading-relaxed">
+          Sempre olhe o tempo gráfico maior para confirmar se o vácuo livre realmente existe ou se há uma barreira escondida.
+        </p>
+      </div>
     </div>
   );
 };
