@@ -59,47 +59,68 @@ const Index = () => {
     setIsAnalyzing(true);
     const price = Number(currentPrice);
     
-    // Simulação de leitura baseada no TF e no Preço fornecido
+    // Simulação de análise estrutural mais variada
     setTimeout(() => {
-      const isHighTF = ['H1', 'H4', 'D1'].includes(selectedTF);
-      const isBuy = !isHighTF; // Simulação: tempos menores compra, maiores venda
+      const randomFactor = Math.random();
+      let existeEntrada = true;
+      let direcao: 'compra' | 'venda' | 'aguardar' = 'compra';
       
-      // Cálculo proporcional de Stop e Alvo (simulando volatilidade do ativo)
-      const volatility = price * 0.002; // 0.2% de variação para o exemplo
+      // 30% de chance de ser "Aguardar" (Sem entrada/Range)
+      if (randomFactor < 0.3) {
+        existeEntrada = false;
+        direcao = 'aguardar';
+      } else if (randomFactor < 0.65) {
+        direcao = 'venda';
+      } else {
+        direcao = 'compra';
+      }
+      
+      const volatility = price * 0.0015; // Ajuste de volatilidade para HK50
       
       setAnalysis({
-        existeEntrada: true,
-        direcao: isBuy ? 'compra' : 'venda',
+        existeEntrada,
+        direcao,
         timeframe: selectedTF,
-        tipoCenario: isBuy ? 'rompimento' : 'reversão',
-        justificativa: isBuy 
-          ? `Identificado fechamento de corpo acima da resistência em ${selectedTF}. O vácuo livre está limpo até a próxima zona de oferta institucional.`
-          : `Análise em ${selectedTF} identifica exaustão de movimento em zona de oferta. Aguardando gatilho de reversão para buscar o vácuo inferior.`,
-        entrada: price.toFixed(2),
-        stop: isBuy ? (price - volatility).toFixed(2) : (price + volatility).toFixed(2),
-        alvo: isBuy ? (price + (volatility * 2.5)).toFixed(2) : (price - (volatility * 2.5)).toFixed(2),
-        contexto: `Estrutura de ${isBuy ? 'Alta' : 'Baixa'} confirmada em ${selectedTF}.`,
+        tipoCenario: !existeEntrada ? 'nenhum' : (direcao === 'compra' ? 'rompimento' : 'reversão'),
+        justificativa: !existeEntrada 
+          ? "O preço está preso em uma zona de briga (Range). Não há vácuo livre suficiente para uma operação segura. Lembre-se: Range é pique-esconde."
+          : direcao === 'compra'
+            ? `Identificado fechamento de corpo acima da região de valor em ${selectedTF}. Vácuo livre detectado até o próximo nível institucional.`
+            : `Exaustão de movimento detectada. O preço falhou em romper o topo anterior e apresenta gatilho de venda para buscar a liquidez inferior.`,
+        entrada: existeEntrada ? price.toFixed(2) : "---",
+        stop: existeEntrada 
+          ? (direcao === 'compra' ? (price - volatility).toFixed(2) : (price + volatility).toFixed(2))
+          : "---",
+        alvo: existeEntrada 
+          ? (direcao === 'compra' ? (price + (volatility * 2.2)).toFixed(2) : (price - (volatility * 2.2)).toFixed(2))
+          : "---",
+        contexto: !existeEntrada ? "Mercado Lateral / Sem Tendência Clara" : `Estrutura de ${direcao === 'compra' ? 'Alta' : 'Baixa'} em ${selectedTF}.`,
         regioesImportantes: [
-          `Suporte Principal: ${(price - volatility * 1.5).toFixed(2)}`,
-          `Resistência Imediata: ${(price + volatility * 1.2).toFixed(2)}`,
-          'Ponto de Controle (POC) Detectado',
-          'Zona de Liquidez Institucional'
+          `Suporte: ${(price - volatility * 2).toFixed(2)}`,
+          `Resistência: ${(price + volatility * 2).toFixed(2)}`,
+          'Zona de Liquidez Detectada',
+          'Pavio de Exaustão Identificado'
         ],
         contextoHTF: {
-          tf: isHighTF ? 'Semanal' : 'H4 / Diário',
-          analise: isBuy 
-            ? 'O preço está em uma tendência de alta clara no H4, tendo acabado de testar uma região de suporte de valor.'
-            : 'No semanal, o preço atinge uma região de valor histórico, sugerindo uma correção técnica forte.'
+          tf: "H4 / Diário",
+          analise: direcao === 'venda' 
+            ? 'Tendência macro de baixa, favorecendo operações de venda na exaustão.'
+            : 'Tendência macro de alta, buscando correções para novas entradas.'
         },
         checklist: {
-          fechamentoCorpo: true,
-          vacuoLivre: true,
-          stopEstrutural: true,
-          tendenciaConfirmada: true
+          fechamentoCorpo: existeEntrada,
+          vacuoLivre: existeEntrada,
+          stopEstrutural: existeEntrada,
+          tendenciaConfirmada: randomFactor > 0.5
         }
       });
+      
       setIsAnalyzing(false);
-      showSuccess(`Análise calibrada para o preço ${price} concluída!`);
+      if (existeEntrada) {
+        showSuccess(`Análise concluída: Sinal de ${direcao.toUpperCase()} detectado.`);
+      } else {
+        showSuccess("Análise concluída: Sem entrada clara no momento.");
+      }
     }, 2000);
   };
 
@@ -151,7 +172,6 @@ const Index = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Seletor de Timeframe */}
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Timeframe</label>
                     <Select value={selectedTF} onValueChange={setSelectedTF}>
@@ -175,7 +195,6 @@ const Index = () => {
                     </Select>
                   </div>
 
-                  {/* Input de Preço Atual */}
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Preço Atual (Calibração)</label>
                     <div className="relative">
@@ -216,7 +235,7 @@ const Index = () => {
                   {isAnalyzing ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                      Analisando...
+                      Analisando Estrutura...
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
@@ -249,9 +268,9 @@ const Index = () => {
               </div>
             )}
 
-            {analysis ? (
-              <AnalysisResult data={analysis} />
-            ) : !selectedImage && (
+            {analysis && <AnalysisResult data={analysis} />}
+            
+            {!analysis && !selectedImage && (
               <div 
                 onClick={triggerFileInput}
                 className="group border-2 border-dashed border-white/10 rounded-[2.5rem] p-20 flex flex-col items-center justify-center text-center bg-white/[0.02] cursor-pointer hover:bg-white/[0.04] hover:border-amber-500/30 transition-all duration-500"
@@ -261,7 +280,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Aguardando MetaTrader</h3>
                 <p className="text-slate-500 max-w-xs mx-auto font-medium">
-                  Insira o preço atual do ativo e envie o print para uma análise calibrada.
+                  Insira o preço atual e envie o print para uma análise estrutural calibrada.
                 </p>
               </div>
             )}
