@@ -5,9 +5,10 @@ import Header from '@/components/Header';
 import AnalysisResult from '@/components/AnalysisResult';
 import OperationalRules from '@/components/OperationalRules';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { 
   ImagePlus, LayoutDashboard, History, 
-  MessageSquare, X, Sparkles, Clock 
+  MessageSquare, X, Sparkles, Clock, Target
 } from 'lucide-react';
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { showSuccess, showError } from '@/utils/toast';
@@ -24,6 +25,7 @@ const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedTF, setSelectedTF] = useState<string>("M15");
+  const [currentPrice, setCurrentPrice] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,36 +51,45 @@ const Index = () => {
 
   const handleAnalyze = () => {
     if (!selectedImage) return;
+    if (!currentPrice || isNaN(Number(currentPrice))) {
+      showError("Por favor, insira o preço atual do ativo para calibrar a análise.");
+      return;
+    }
     
     setIsAnalyzing(true);
+    const price = Number(currentPrice);
     
-    // Simulação de leitura baseada no TF selecionado
+    // Simulação de leitura baseada no TF e no Preço fornecido
     setTimeout(() => {
       const isHighTF = ['H1', 'H4', 'D1'].includes(selectedTF);
+      const isBuy = !isHighTF; // Simulação: tempos menores compra, maiores venda
+      
+      // Cálculo proporcional de Stop e Alvo (simulando volatilidade do ativo)
+      const volatility = price * 0.002; // 0.2% de variação para o exemplo
       
       setAnalysis({
         existeEntrada: true,
-        direcao: isHighTF ? 'venda' : 'compra',
+        direcao: isBuy ? 'compra' : 'venda',
         timeframe: selectedTF,
-        tipoCenario: isHighTF ? 'reversão' : 'rompimento',
-        justificativa: isHighTF 
-          ? `Análise em ${selectedTF} identifica exaustão de movimento em zona de oferta institucional. Aguardando gatilho de reversão para buscar o vácuo livre inferior.`
-          : `Identificado fechamento de corpo acima da resistência em ${selectedTF}. O vácuo livre está limpo até a próxima zona de oferta.`,
-        entrada: isHighTF ? '1.09200' : '1.08450',
-        stop: isHighTF ? '1.09450' : '1.08310',
-        alvo: isHighTF ? '1.08500' : '1.08780',
-        contexto: `Tendência de ${isHighTF ? 'Baixa' : 'Alta'} em ${selectedTF}.`,
+        tipoCenario: isBuy ? 'rompimento' : 'reversão',
+        justificativa: isBuy 
+          ? `Identificado fechamento de corpo acima da resistência em ${selectedTF}. O vácuo livre está limpo até a próxima zona de oferta institucional.`
+          : `Análise em ${selectedTF} identifica exaustão de movimento em zona de oferta. Aguardando gatilho de reversão para buscar o vácuo inferior.`,
+        entrada: price.toFixed(2),
+        stop: isBuy ? (price - volatility).toFixed(2) : (price + volatility).toFixed(2),
+        alvo: isBuy ? (price + (volatility * 2.5)).toFixed(2) : (price - (volatility * 2.5)).toFixed(2),
+        contexto: `Estrutura de ${isBuy ? 'Alta' : 'Baixa'} confirmada em ${selectedTF}.`,
         regioesImportantes: [
-          `Suporte ${selectedTF}: 1.08200`,
-          'Resistência H4: 1.08950',
-          'Zona de Oferta Diária: 1.09200',
-          'Ponto de Controle (POC): 1.08400'
+          `Suporte Principal: ${(price - volatility * 1.5).toFixed(2)}`,
+          `Resistência Imediata: ${(price + volatility * 1.2).toFixed(2)}`,
+          'Ponto de Controle (POC) Detectado',
+          'Zona de Liquidez Institucional'
         ],
         contextoHTF: {
           tf: isHighTF ? 'Semanal' : 'H4 / Diário',
-          analise: isHighTF 
-            ? 'No semanal, o preço atinge uma região de valor histórico, sugerindo correção forte.'
-            : 'O preço está em uma tendência de alta clara no H4, tendo acabado de testar uma região de suporte.'
+          analise: isBuy 
+            ? 'O preço está em uma tendência de alta clara no H4, tendo acabado de testar uma região de suporte de valor.'
+            : 'No semanal, o preço atinge uma região de valor histórico, sugerindo uma correção técnica forte.'
         },
         checklist: {
           fechamentoCorpo: true,
@@ -88,7 +99,7 @@ const Index = () => {
         }
       });
       setIsAnalyzing(false);
-      showSuccess(`Análise em ${selectedTF} concluída!`);
+      showSuccess(`Análise calibrada para o preço ${price} concluída!`);
     }, 2000);
   };
 
@@ -130,7 +141,7 @@ const Index = () => {
           {/* Área Principal */}
           <div className="lg:col-span-8 space-y-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-              <div className="space-y-4">
+              <div className="space-y-4 flex-1">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-amber-500">
                     <Sparkles size={16} />
@@ -139,28 +150,45 @@ const Index = () => {
                   <h2 className="text-4xl font-black text-white tracking-tight">Nova Leitura</h2>
                 </div>
 
-                {/* Seletor de Timeframe */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Confirmar Timeframe</label>
-                  <Select value={selectedTF} onValueChange={setSelectedTF}>
-                    <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white font-bold rounded-xl h-12">
-                      <div className="flex items-center gap-2">
-                        <Clock size={16} className="text-amber-500" />
-                        <SelectValue placeholder="Timeframe" />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-white/10 text-white">
-                      <SelectItem value="M1">M1 (1 Minuto)</SelectItem>
-                      <SelectItem value="M2">M2 (2 Minutos)</SelectItem>
-                      <SelectItem value="M3">M3 (3 Minutos)</SelectItem>
-                      <SelectItem value="M5">M5 (5 Minutos)</SelectItem>
-                      <SelectItem value="M15">M15 (15 Minutos)</SelectItem>
-                      <SelectItem value="M30">M30 (30 Minutos)</SelectItem>
-                      <SelectItem value="H1">H1 (1 Hora)</SelectItem>
-                      <SelectItem value="H4">H4 (4 Horas)</SelectItem>
-                      <SelectItem value="D1">D1 (Diário)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Seletor de Timeframe */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Timeframe</label>
+                    <Select value={selectedTF} onValueChange={setSelectedTF}>
+                      <SelectTrigger className="bg-white/5 border-white/10 text-white font-bold rounded-xl h-12">
+                        <div className="flex items-center gap-2">
+                          <Clock size={16} className="text-amber-500" />
+                          <SelectValue placeholder="Timeframe" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        <SelectItem value="M1">M1 (1 Minuto)</SelectItem>
+                        <SelectItem value="M2">M2 (2 Minutos)</SelectItem>
+                        <SelectItem value="M3">M3 (3 Minutos)</SelectItem>
+                        <SelectItem value="M5">M5 (5 Minutos)</SelectItem>
+                        <SelectItem value="M15">M15 (15 Minutos)</SelectItem>
+                        <SelectItem value="M30">M30 (30 Minutos)</SelectItem>
+                        <SelectItem value="H1">H1 (1 Hora)</SelectItem>
+                        <SelectItem value="H4">H4 (4 Horas)</SelectItem>
+                        <SelectItem value="D1">D1 (Diário)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Input de Preço Atual */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Preço Atual (Calibração)</label>
+                    <div className="relative">
+                      <Target className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" size={16} />
+                      <Input 
+                        type="text"
+                        placeholder="Ex: 26743.40"
+                        value={currentPrice}
+                        onChange={(e) => setCurrentPrice(e.target.value)}
+                        className="bg-white/5 border-white/10 text-white font-bold rounded-xl h-12 pl-10 focus:ring-amber-500/50"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -188,7 +216,7 @@ const Index = () => {
                   {isAnalyzing ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                      Analisando {selectedTF}...
+                      Analisando...
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
@@ -233,7 +261,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Aguardando MetaTrader</h3>
                 <p className="text-slate-500 max-w-xs mx-auto font-medium">
-                  Selecione o Timeframe acima e envie o print para uma análise precisa.
+                  Insira o preço atual do ativo e envie o print para uma análise calibrada.
                 </p>
               </div>
             )}
