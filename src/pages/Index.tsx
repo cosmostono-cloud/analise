@@ -41,17 +41,28 @@ const Index = () => {
     
     setIsAnalyzing(true);
     
-    // Simulação de leitura de preços do MetaTrader
+    // Simulação de leitura avançada (TF, MTF e Regiões)
     setTimeout(() => {
       setAnalysis({
         existeEntrada: true,
         direcao: 'compra',
+        timeframe: 'M15',
         tipoCenario: 'rompimento',
         justificativa: 'Identificado fechamento de corpo acima da resistência em 1.08420. O vácuo livre está limpo até a próxima zona de oferta. Estrutura de alta confirmada pelo rompimento do topo anterior.',
         entrada: '1.08450',
         stop: '1.08310',
         alvo: '1.08780',
-        contexto: 'Tendência de Alta (H1) com rompimento de lateralidade.',
+        contexto: 'Tendência de Alta (M15) com rompimento de lateralidade.',
+        regioesImportantes: [
+          'Suporte H1: 1.08200',
+          'Resistência H4: 1.08950',
+          'Zona de Oferta Diária: 1.09200',
+          'Ponto de Controle (POC): 1.08400'
+        ],
+        contextoHTF: {
+          tf: 'H4 / Diário',
+          analise: 'O preço está em uma tendência de alta clara no H4, tendo acabado de testar uma região de suporte institucional. O vácuo livre no diário sugere que temos espaço para subir até a próxima grande resistência.'
+        },
         checklist: {
           fechamentoCorpo: true,
           vacuoLivre: true,
@@ -60,8 +71,8 @@ const Index = () => {
         }
       });
       setIsAnalyzing(false);
-      showSuccess("Níveis de preço identificados com sucesso!");
-    }, 2000);
+      showSuccess("Análise Multi-Timeframe concluída!");
+    }, 2500);
   };
 
   const clearImage = () => {
@@ -108,7 +119,7 @@ const Index = () => {
                   <span className="text-[10px] font-black uppercase tracking-[0.3em]">Leitura de Preços MT4/MT5</span>
                 </div>
                 <h2 className="text-4xl font-black text-white tracking-tight">Nova Leitura</h2>
-                <p className="text-slate-500 font-medium">Envie o print com a escala lateral para ver os níveis exatos.</p>
+                <p className="text-slate-500 font-medium">Envie o print com a escala lateral e o TF visível.</p>
               </div>
               
               <input 
@@ -135,7 +146,7 @@ const Index = () => {
                   {isAnalyzing ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                      Lendo Preços...
+                      Analisando Estrutura...
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
@@ -180,7 +191,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Aguardando MetaTrader</h3>
                 <p className="text-slate-500 max-w-xs mx-auto font-medium">
-                  Certifique-se de que os preços laterais estão visíveis para uma leitura 100% precisa.
+                  Certifique-se de que o Tempo Gráfico (M15, H1, etc) está visível no print.
                 </p>
               </div>
             )}
