@@ -5,14 +5,25 @@ import Header from '@/components/Header';
 import AnalysisResult from '@/components/AnalysisResult';
 import OperationalRules from '@/components/OperationalRules';
 import { Button } from "@/components/ui/button";
-import { ImagePlus, LayoutDashboard, History, MessageSquare, X, Sparkles } from 'lucide-react';
+import { 
+  ImagePlus, LayoutDashboard, History, 
+  MessageSquare, X, Sparkles, Clock 
+} from 'lucide-react';
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { showSuccess, showError } from '@/utils/toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Index = () => {
   const [analysis, setAnalysis] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedTF, setSelectedTF] = useState<string>("M15");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,27 +52,33 @@ const Index = () => {
     
     setIsAnalyzing(true);
     
-    // Simulação de leitura avançada (TF, MTF e Regiões)
+    // Simulação de leitura baseada no TF selecionado
     setTimeout(() => {
+      const isHighTF = ['H1', 'H4', 'D1'].includes(selectedTF);
+      
       setAnalysis({
         existeEntrada: true,
-        direcao: 'compra',
-        timeframe: 'M15',
-        tipoCenario: 'rompimento',
-        justificativa: 'Identificado fechamento de corpo acima da resistência em 1.08420. O vácuo livre está limpo até a próxima zona de oferta. Estrutura de alta confirmada pelo rompimento do topo anterior.',
-        entrada: '1.08450',
-        stop: '1.08310',
-        alvo: '1.08780',
-        contexto: 'Tendência de Alta (M15) com rompimento de lateralidade.',
+        direcao: isHighTF ? 'venda' : 'compra',
+        timeframe: selectedTF,
+        tipoCenario: isHighTF ? 'reversão' : 'rompimento',
+        justificativa: isHighTF 
+          ? `Análise em ${selectedTF} identifica exaustão de movimento em zona de oferta institucional. Aguardando gatilho de reversão para buscar o vácuo livre inferior.`
+          : `Identificado fechamento de corpo acima da resistência em ${selectedTF}. O vácuo livre está limpo até a próxima zona de oferta.`,
+        entrada: isHighTF ? '1.09200' : '1.08450',
+        stop: isHighTF ? '1.09450' : '1.08310',
+        alvo: isHighTF ? '1.08500' : '1.08780',
+        contexto: `Tendência de ${isHighTF ? 'Baixa' : 'Alta'} em ${selectedTF}.`,
         regioesImportantes: [
-          'Suporte H1: 1.08200',
+          `Suporte ${selectedTF}: 1.08200`,
           'Resistência H4: 1.08950',
           'Zona de Oferta Diária: 1.09200',
           'Ponto de Controle (POC): 1.08400'
         ],
         contextoHTF: {
-          tf: 'H4 / Diário',
-          analise: 'O preço está em uma tendência de alta clara no H4, tendo acabado de testar uma região de suporte institucional. O vácuo livre no diário sugere que temos espaço para subir até a próxima grande resistência.'
+          tf: isHighTF ? 'Semanal' : 'H4 / Diário',
+          analise: isHighTF 
+            ? 'No semanal, o preço atinge uma região de valor histórico, sugerindo correção forte.'
+            : 'O preço está em uma tendência de alta clara no H4, tendo acabado de testar uma região de suporte.'
         },
         checklist: {
           fechamentoCorpo: true,
@@ -71,8 +88,8 @@ const Index = () => {
         }
       });
       setIsAnalyzing(false);
-      showSuccess("Análise Multi-Timeframe concluída!");
-    }, 2500);
+      showSuccess(`Análise em ${selectedTF} concluída!`);
+    }, 2000);
   };
 
   const clearImage = () => {
@@ -113,13 +130,36 @@ const Index = () => {
           {/* Área Principal */}
           <div className="lg:col-span-8 space-y-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-amber-500">
-                  <Sparkles size={16} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">Leitura de Preços MT4/MT5</span>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-amber-500">
+                    <Sparkles size={16} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em]">Leitura de Preços MT4/MT5</span>
+                  </div>
+                  <h2 className="text-4xl font-black text-white tracking-tight">Nova Leitura</h2>
                 </div>
-                <h2 className="text-4xl font-black text-white tracking-tight">Nova Leitura</h2>
-                <p className="text-slate-500 font-medium">Envie o print com a escala lateral e o TF visível.</p>
+
+                {/* Seletor de Timeframe */}
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Confirmar Timeframe</label>
+                  <Select value={selectedTF} onValueChange={setSelectedTF}>
+                    <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white font-bold rounded-xl h-12">
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} className="text-amber-500" />
+                        <SelectValue placeholder="Timeframe" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-white/10 text-white">
+                      <SelectItem value="M1">M1 (1 Minuto)</SelectItem>
+                      <SelectItem value="M5">M5 (5 Minutos)</SelectItem>
+                      <SelectItem value="M15">M15 (15 Minutos)</SelectItem>
+                      <SelectItem value="M30">M30 (30 Minutos)</SelectItem>
+                      <SelectItem value="H1">H1 (1 Hora)</SelectItem>
+                      <SelectItem value="H4">H4 (4 Horas)</SelectItem>
+                      <SelectItem value="D1">D1 (Diário)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               
               <input 
@@ -146,7 +186,7 @@ const Index = () => {
                   {isAnalyzing ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                      Analisando Estrutura...
+                      Analisando {selectedTF}...
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
@@ -191,7 +231,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Aguardando MetaTrader</h3>
                 <p className="text-slate-500 max-w-xs mx-auto font-medium">
-                  Certifique-se de que o Tempo Gráfico (M15, H1, etc) está visível no print.
+                  Selecione o Timeframe acima e envie o print para uma análise precisa.
                 </p>
               </div>
             )}
