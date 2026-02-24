@@ -3,9 +3,10 @@
 import React, { useState, useRef } from 'react';
 import Header from '@/components/Header';
 import AnalysisResult from '@/components/AnalysisResult';
+import OperationalRules from '@/components/OperationalRules';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ImagePlus, LayoutDashboard, History, Settings, MessageSquare, X } from 'lucide-react';
+import { ImagePlus, LayoutDashboard, History, Settings, MessageSquare, X, Sparkles } from 'lucide-react';
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { showSuccess, showError } from '@/utils/toast';
 
@@ -26,7 +27,7 @@ const Index = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target?.result as string);
-        setAnalysis(null); // Limpa análise anterior ao carregar nova imagem
+        setAnalysis(null);
       };
       reader.readAsDataURL(file);
     }
@@ -41,7 +42,6 @@ const Index = () => {
     
     setIsAnalyzing(true);
     
-    // Simulação de processamento estrutural
     setTimeout(() => {
       setAnalysis({
         existeEntrada: true,
@@ -64,46 +64,44 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main className="flex-1 container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
-          {/* Sidebar */}
-          <div className="lg:col-span-3 space-y-4">
-            <nav className="space-y-1">
-              <Button variant="ghost" className="w-full justify-start gap-3 text-blue-600 bg-blue-50">
-                <LayoutDashboard size={18} /> Dashboard
+          {/* Sidebar Esquerda: Regras e Mindset */}
+          <div className="lg:col-span-4 space-y-8">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-black text-white tracking-tighter">OPERACIONAL</h2>
+              <p className="text-slate-500 text-sm font-medium">Domine a estrutura, domine o mercado.</p>
+            </div>
+            
+            <OperationalRules />
+
+            <nav className="space-y-2 pt-4">
+              <Button variant="ghost" className="w-full justify-start gap-3 text-amber-500 bg-amber-500/5 border border-amber-500/10 hover:bg-amber-500/10">
+                <LayoutDashboard size={18} /> Terminal de Análise
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600">
-                <History size={18} /> Histórico
+              <Button variant="ghost" className="w-full justify-start gap-3 text-slate-400 hover:text-white hover:bg-white/5">
+                <History size={18} /> Histórico de Trades
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600">
-                <MessageSquare size={18} /> Suporte Técnico
-              </Button>
-              <Button variant="ghost" className="w-full justify-start gap-3 text-slate-600">
-                <Settings size={18} /> Configurações
+              <Button variant="ghost" className="w-full justify-start gap-3 text-slate-400 hover:text-white hover:bg-white/5">
+                <MessageSquare size={18} /> Mentoria Direta
               </Button>
             </nav>
-
-            <Card className="bg-slate-900 text-white border-none">
-              <CardContent className="p-4">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Status do Mercado</h4>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-sm font-medium">Sistemas Operacionais</span>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Área Principal */}
-          <div className="lg:col-span-9 space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">Nova Análise</h2>
-                <p className="text-slate-500">Envie o print do gráfico para processamento estrutural.</p>
+          {/* Área Principal: Upload e Resultados */}
+          <div className="lg:col-span-8 space-y-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-amber-500">
+                  <Sparkles size={16} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">Inteligência Estrutural</span>
+                </div>
+                <h2 className="text-4xl font-black text-white tracking-tight">Nova Leitura</h2>
+                <p className="text-slate-500 font-medium">O preço fala. Eu apenas traduzo a estrutura.</p>
               </div>
               
               <input 
@@ -117,22 +115,20 @@ const Index = () => {
               {!selectedImage ? (
                 <Button 
                   onClick={triggerFileInput}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-xl shadow-lg shadow-blue-200 transition-all hover:scale-[1.02]"
+                  className="bg-white text-black hover:bg-slate-200 px-10 py-7 rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-white/5 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span className="flex items-center gap-2">
-                    <ImagePlus size={20} /> Carregar Gráfico
-                  </span>
+                  <ImagePlus size={20} className="mr-2" /> Carregar Print
                 </Button>
               ) : (
                 <Button 
                   onClick={handleAnalyze}
                   disabled={isAnalyzing}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-6 rounded-xl shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02]"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-black px-10 py-7 rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-emerald-500/20 transition-all hover:scale-[1.02]"
                 >
                   {isAnalyzing ? (
                     <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Processando Estrutura...
+                      <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      Processando...
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
@@ -144,22 +140,22 @@ const Index = () => {
             </div>
 
             {selectedImage && (
-              <div className="relative group">
-                <div className="absolute -top-3 -right-3 z-10">
+              <div className="relative group animate-in zoom-in-95 duration-500">
+                <div className="absolute -top-4 -right-4 z-20">
                   <Button 
                     variant="destructive" 
                     size="icon" 
-                    className="rounded-full w-8 h-8 shadow-lg"
+                    className="rounded-full w-10 h-10 shadow-2xl border-2 border-black"
                     onClick={clearImage}
                   >
-                    <X size={16} />
+                    <X size={20} />
                   </Button>
                 </div>
-                <div className="rounded-2xl overflow-hidden border-4 border-white shadow-2xl bg-white">
+                <div className="rounded-[2rem] overflow-hidden border-8 border-white/5 shadow-[0_0_50px_-12px_rgba(255,255,255,0.1)] bg-black">
                   <img 
                     src={selectedImage} 
                     alt="Gráfico para análise" 
-                    className="w-full h-auto max-h-[500px] object-contain"
+                    className="w-full h-auto max-h-[600px] object-contain opacity-90 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
               </div>
@@ -170,14 +166,14 @@ const Index = () => {
             ) : !selectedImage && (
               <div 
                 onClick={triggerFileInput}
-                className="border-2 border-dashed border-slate-200 rounded-3xl p-12 flex flex-col items-center justify-center text-center bg-white/50 cursor-pointer hover:bg-white hover:border-blue-300 transition-all"
+                className="group border-2 border-dashed border-white/10 rounded-[2.5rem] p-20 flex flex-col items-center justify-center text-center bg-white/[0.02] cursor-pointer hover:bg-white/[0.04] hover:border-amber-500/30 transition-all duration-500"
               >
-                <div className="bg-slate-100 p-6 rounded-full mb-4">
-                  <ImagePlus size={48} className="text-slate-300" />
+                <div className="bg-white/5 p-8 rounded-3xl mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <ImagePlus size={56} className="text-slate-600 group-hover:text-amber-500 transition-colors" />
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">Aguardando Gráfico</h3>
-                <p className="text-slate-500 max-w-xs mx-auto">
-                  Clique aqui ou no botão acima para enviar uma imagem e receber a análise técnica.
+                <h3 className="text-xl font-bold text-white mb-2">Aguardando Estrutura</h3>
+                <p className="text-slate-500 max-w-xs mx-auto font-medium">
+                  Arraste o print do gráfico ou clique para iniciar a leitura profissional.
                 </p>
               </div>
             )}
@@ -185,9 +181,12 @@ const Index = () => {
         </div>
       </main>
 
-      <footer className="py-8 border-t bg-white">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-500">© 2024 Sihle Pro Analysis. Todos os direitos reservados.</p>
+      <footer className="py-12 border-t border-white/5 bg-black/40">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">© 2024 Sihle Elite Analysis</p>
+            <p className="text-[10px] text-slate-600 italic">"O sucesso é a soma de pequenos fechamentos diários."</p>
+          </div>
           <MadeWithDyad />
         </div>
       </footer>

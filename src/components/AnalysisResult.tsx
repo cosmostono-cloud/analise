@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Target, ShieldAlert, ArrowRightCircle, Info } from 'lucide-react';
+import { CheckCircle2, XCircle, Target, ShieldAlert, ArrowRightCircle, Info, ChevronRight } from 'lucide-react';
 
 interface AnalysisProps {
   data: {
@@ -21,73 +21,83 @@ const AnalysisResult = ({ data }: AnalysisProps) => {
   if (!data) return null;
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <Card className="border-2 border-slate-200 shadow-xl overflow-hidden">
-        <CardHeader className={`${data.existeEntrada ? 'bg-emerald-50 border-b-emerald-100' : 'bg-slate-50 border-b-slate-100'} border-b p-6`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {data.existeEntrada ? (
-                <CheckCircle2 className="text-emerald-600" size={28} />
-              ) : (
-                <XCircle className="text-slate-400" size={28} />
-              )}
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <Card className="border-white/5 bg-slate-900/40 backdrop-blur-md shadow-2xl overflow-hidden">
+        <CardHeader className={`${data.existeEntrada ? 'bg-emerald-500/10 border-b-emerald-500/20' : 'bg-red-500/10 border-b-red-500/20'} border-b p-8`}>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-2xl ${data.existeEntrada ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}`}>
+                {data.existeEntrada ? <CheckCircle2 size={32} /> : <XCircle size={32} />}
+              </div>
               <div>
-                <CardTitle className="text-xl font-bold text-slate-900">
+                <CardTitle className="text-2xl font-black text-white tracking-tight">
                   1) Existe entrada agora?
                 </CardTitle>
-                <p className={`text-lg font-black uppercase ${data.existeEntrada ? 'text-emerald-600' : 'text-slate-500'}`}>
-                  → {data.existeEntrada ? 'SIM' : 'NÃO'}
+                <p className={`text-xl font-black uppercase tracking-widest ${data.existeEntrada ? 'text-emerald-400' : 'text-red-400'}`}>
+                  → {data.existeEntrada ? 'SIM, OPERAÇÃO VÁLIDA' : 'NÃO, AGUARDE FORA'}
                 </p>
               </div>
             </div>
-            <Badge variant={data.existeEntrada ? "default" : "secondary"} className="px-4 py-1 text-sm uppercase tracking-wider">
+            <Badge variant="outline" className="px-6 py-2 text-sm uppercase font-black tracking-[0.2em] border-white/10 bg-white/5 text-amber-500">
               {data.tipoCenario}
             </Badge>
           </div>
         </CardHeader>
         
         <CardContent className="p-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-            <div className="p-6 space-y-6">
-              <section>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/5">
+            <div className="p-8 space-y-8">
+              <section className="space-y-3">
+                <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] flex items-center gap-2">
                   <Info size={14} /> 2) Tipo de Cenário
                 </h3>
-                <p className="text-slate-700 font-medium capitalize">→ {data.tipoCenario}</p>
+                <p className="text-lg text-slate-200 font-bold capitalize flex items-center gap-2">
+                  <ChevronRight size={18} className="text-amber-500" /> {data.tipoCenario}
+                </p>
               </section>
 
-              <section>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <section className="space-y-3">
+                <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] flex items-center gap-2">
                   <ShieldAlert size={14} /> 3) Justificativa Técnica
                 </h3>
-                <p className="text-slate-700 leading-relaxed">→ {data.justificativa}</p>
+                <p className="text-slate-300 leading-relaxed font-medium bg-white/5 p-4 rounded-xl border border-white/5">
+                  {data.justificativa}
+                </p>
               </section>
 
-              <section>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <section className="space-y-3">
+                <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] flex items-center gap-2">
                   <ArrowRightCircle size={14} /> 7) Leitura Geral
                 </h3>
-                <p className="text-slate-700 font-medium">→ {data.contexto}</p>
+                <p className="text-slate-200 font-bold text-lg">→ {data.contexto}</p>
               </section>
             </div>
 
-            <div className={`p-6 space-y-6 ${data.existeEntrada ? 'bg-emerald-50/30' : 'bg-slate-50/30'}`}>
-              <div className="space-y-4">
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">4) Entrada Ideal</h3>
-                  <p className="text-lg font-bold text-slate-900">{data.entrada}</p>
+            <div className={`p-8 space-y-6 ${data.existeEntrada ? 'bg-emerald-500/5' : 'bg-red-500/5'}`}>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="bg-black/40 p-6 rounded-2xl border border-white/5 shadow-inner group hover:border-blue-500/30 transition-colors">
+                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">4) Entrada Ideal</h3>
+                  <p className="text-2xl font-black text-white group-hover:text-blue-400 transition-colors">{data.entrada}</p>
                 </div>
 
-                <div className="bg-white p-4 rounded-xl border border-red-100 shadow-sm">
-                  <h3 className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">5) Stop Estrutural</h3>
-                  <p className="text-lg font-bold text-slate-900">{data.stop}</p>
+                <div className="bg-black/40 p-6 rounded-2xl border border-white/5 shadow-inner group hover:border-red-500/30 transition-colors">
+                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">5) Stop Estrutural</h3>
+                  <p className="text-2xl font-black text-white group-hover:text-red-400 transition-colors">{data.stop}</p>
                 </div>
 
-                <div className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm">
-                  <h3 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1 flex items-center gap-1">
+                <div className="bg-black/40 p-6 rounded-2xl border border-white/5 shadow-inner group hover:border-emerald-500/30 transition-colors">
+                  <h3 className="text-[10px] font-black text-emerald-500/70 uppercase tracking-[0.3em] mb-2 flex items-center gap-2">
                     <Target size={14} /> 6) Alvo Provável
                   </h3>
-                  <p className="text-lg font-bold text-slate-900">{data.alvo}</p>
+                  <p className="text-2xl font-black text-white group-hover:text-emerald-400 transition-colors">{data.alvo}</p>
+                </div>
+              </div>
+              
+              <div className="pt-4">
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                  <p className="text-[10px] text-amber-500 font-black uppercase tracking-widest text-center">
+                    Lembre-se: O alvo é baseado no vácuo livre.
+                  </p>
                 </div>
               </div>
             </div>
@@ -96,8 +106,8 @@ const AnalysisResult = ({ data }: AnalysisProps) => {
       </Card>
       
       {!data.existeEntrada && (
-        <div className="bg-slate-900 text-white p-4 rounded-lg text-center font-bold tracking-widest uppercase text-sm">
-          NÃO HÁ TRADE VÁLIDO NO MOMENTO.
+        <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-6 rounded-2xl text-center font-black tracking-[0.3em] uppercase text-sm shadow-lg">
+          NÃO HÁ TRADE VÁLIDO NO MOMENTO. PRESERVE SEU CAPITAL.
         </div>
       )}
     </div>
