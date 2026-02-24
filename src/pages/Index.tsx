@@ -41,16 +41,17 @@ const Index = () => {
     
     setIsAnalyzing(true);
     
+    // Simulação de leitura de preços do MetaTrader
     setTimeout(() => {
       setAnalysis({
         existeEntrada: true,
         direcao: 'compra',
         tipoCenario: 'rompimento',
-        justificativa: 'O preço apresentou um fechamento nítido acima da zona de resistência anterior. O candle de rompimento possui corpo expressivo e pouco pavio superior, indicando pressão compradora. Existe vácuo livre significativo até o próximo nível de oferta.',
-        entrada: 'Nível de fechamento do candle de rompimento',
-        stop: 'Abaixo do último fundo ascendente (Stop Estrutural)',
-        alvo: '75% da projeção do vácuo livre até a próxima barreira',
-        contexto: 'Transição de lateralidade para tendência de alta confirmada por pivô.',
+        justificativa: 'Identificado fechamento de corpo acima da resistência em 1.08420. O vácuo livre está limpo até a próxima zona de oferta. Estrutura de alta confirmada pelo rompimento do topo anterior.',
+        entrada: '1.08450',
+        stop: '1.08310',
+        alvo: '1.08780',
+        contexto: 'Tendência de Alta (H1) com rompimento de lateralidade.',
         checklist: {
           fechamentoCorpo: true,
           vacuoLivre: true,
@@ -59,7 +60,7 @@ const Index = () => {
         }
       });
       setIsAnalyzing(false);
-      showSuccess("Análise estrutural concluída com sucesso!");
+      showSuccess("Níveis de preço identificados com sucesso!");
     }, 2000);
   };
 
@@ -104,10 +105,10 @@ const Index = () => {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-amber-500">
                   <Sparkles size={16} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">Inteligência Estrutural</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">Leitura de Preços MT4/MT5</span>
                 </div>
                 <h2 className="text-4xl font-black text-white tracking-tight">Nova Leitura</h2>
-                <p className="text-slate-500 font-medium">O preço fala. Eu apenas traduzo a estrutura.</p>
+                <p className="text-slate-500 font-medium">Envie o print com a escala lateral para ver os níveis exatos.</p>
               </div>
               
               <input 
@@ -134,7 +135,7 @@ const Index = () => {
                   {isAnalyzing ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                      Processando...
+                      Lendo Preços...
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
@@ -177,9 +178,9 @@ const Index = () => {
                 <div className="bg-white/5 p-8 rounded-3xl mb-6 group-hover:scale-110 transition-transform duration-500">
                   <ImagePlus size={56} className="text-slate-600 group-hover:text-amber-500 transition-colors" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Aguardando Estrutura</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Aguardando MetaTrader</h3>
                 <p className="text-slate-500 max-w-xs mx-auto font-medium">
-                  Arraste o print do gráfico ou clique para iniciar a leitura profissional.
+                  Certifique-se de que os preços laterais estão visíveis para uma leitura 100% precisa.
                 </p>
               </div>
             )}

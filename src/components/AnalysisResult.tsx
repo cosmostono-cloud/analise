@@ -7,7 +7,7 @@ import {
   CheckCircle2, XCircle, Target, ShieldAlert, 
   ArrowRightCircle, Info, ChevronRight, 
   TrendingUp, TrendingDown, AlertCircle,
-  CheckSquare, Square
+  CheckSquare, Square, Hash
 } from 'lucide-react';
 
 interface AnalysisProps {
@@ -56,8 +56,8 @@ const AnalysisResult = ({ data }: AnalysisProps) => {
           </div>
         </div>
         <div className="text-right hidden md:block">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Probabilidade</p>
-          <p className="text-2xl font-black text-white">ALTA</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Confirmação</p>
+          <p className="text-2xl font-black text-white">ESTRUTURAL</p>
         </div>
       </div>
 
@@ -67,7 +67,7 @@ const AnalysisResult = ({ data }: AnalysisProps) => {
           <CardHeader className="border-b border-white/5 p-6">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2">
-                <Info size={18} className="text-amber-500" /> Detalhes da Estrutura
+                <Hash size={18} className="text-amber-500" /> Níveis de Preço (MT4/MT5)
               </CardTitle>
               <Badge variant="outline" className="border-amber-500/30 text-amber-500 uppercase font-black px-4">
                 {data.tipoCenario}
@@ -78,29 +78,29 @@ const AnalysisResult = ({ data }: AnalysisProps) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <section>
-                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Justificativa Técnica</h3>
+                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Análise da Estrutura</h3>
                   <p className="text-sm text-slate-300 leading-relaxed bg-white/5 p-4 rounded-xl border border-white/5">
                     {data.justificativa}
                   </p>
                 </section>
-                <section>
-                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Leitura Geral</h3>
-                  <p className="text-lg font-bold text-white">→ {data.contexto}</p>
+                <section className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
+                  <h3 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Contexto</h3>
+                  <p className="text-sm font-bold text-white">{data.contexto}</p>
                 </section>
               </div>
 
               <div className="space-y-3">
-                <div className="bg-black/40 p-4 rounded-xl border border-white/5">
-                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Entrada</h3>
-                  <p className="text-xl font-black text-white">{data.entrada}</p>
+                <div className="bg-black/60 p-5 rounded-2xl border border-white/10 shadow-xl group hover:border-blue-500/50 transition-all">
+                  <h3 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Preço de Entrada</h3>
+                  <p className="text-3xl font-black text-white tracking-tighter">{data.entrada}</p>
                 </div>
-                <div className="bg-black/40 p-4 rounded-xl border border-red-500/20">
-                  <h3 className="text-[10px] font-black text-red-500/70 uppercase tracking-widest mb-1">Stop Estrutural</h3>
-                  <p className="text-xl font-black text-white">{data.stop}</p>
+                <div className="bg-black/60 p-5 rounded-2xl border border-red-500/20 shadow-xl group hover:border-red-500/50 transition-all">
+                  <h3 className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Stop Loss (Saída de Risco)</h3>
+                  <p className="text-3xl font-black text-white tracking-tighter">{data.stop}</p>
                 </div>
-                <div className="bg-black/40 p-4 rounded-xl border border-emerald-500/20">
-                  <h3 className="text-[10px] font-black text-emerald-500/70 uppercase tracking-widest mb-1">Alvo (80% Vácuo)</h3>
-                  <p className="text-xl font-black text-white">{data.alvo}</p>
+                <div className="bg-black/60 p-5 rounded-2xl border border-emerald-500/20 shadow-xl group hover:border-emerald-500/50 transition-all">
+                  <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Take Profit (Saída de Lucro)</h3>
+                  <p className="text-3xl font-black text-white tracking-tighter">{data.alvo}</p>
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@ const AnalysisResult = ({ data }: AnalysisProps) => {
             
             <div className="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
               <p className="text-[10px] text-amber-500 font-black uppercase tracking-widest text-center leading-tight">
-                "Se um item falhar, o trade não existe."
+                "O preço não mente. Se a escala lateral estiver visível, a precisão é máxima."
               </p>
             </div>
           </CardContent>
