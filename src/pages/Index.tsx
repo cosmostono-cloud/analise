@@ -204,7 +204,7 @@ const Index = () => {
                       <Target className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" size={16} />
                       <Input 
                         type="text"
-                        placeholder="Ex: 26743.40"
+                        placeholder="Ex: 1.0845, 26743 ou 65000"
                         value={currentPrice}
                         onChange={(e) => setCurrentPrice(e.target.value)}
                         className="bg-white/5 border-white/10 text-white font-bold rounded-xl h-12 pl-10 focus:ring-amber-500/50"

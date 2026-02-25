@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { TrendingUp, ShieldCheck, Crown } from 'lucide-react';
+import { TrendingUp, ShieldCheck, Crown, Globe } from 'lucide-react';
 
 const Header = () => {
   return (
@@ -22,9 +22,9 @@ const Header = () => {
         
         <div className="flex items-center gap-6">
           <div className="hidden md:flex items-center gap-4">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Mindset</span>
-              <span className="text-xs text-amber-200/70 italic">"Pavio não é fechamento"</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10">
+              <Globe size={12} className="text-amber-500" />
+              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Multi-Ativo Ativado</span>
             </div>
             <div className="h-8 w-[1px] bg-white/10" />
             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 rounded-full border border-emerald-500/20">
