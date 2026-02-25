@@ -59,69 +59,72 @@ const Index = () => {
     setIsAnalyzing(true);
     const price = Number(currentPrice);
     
-    // Simulação de análise estrutural mais variada
     setTimeout(() => {
       const randomFactor = Math.random();
       let existeEntrada = true;
       let direcao: 'compra' | 'venda' | 'aguardar' = 'compra';
       
-      // 30% de chance de ser "Aguardar" (Sem entrada/Range)
-      if (randomFactor < 0.3) {
+      if (randomFactor < 0.25) {
         existeEntrada = false;
         direcao = 'aguardar';
-      } else if (randomFactor < 0.65) {
+      } else if (randomFactor < 0.6) {
         direcao = 'venda';
       } else {
         direcao = 'compra';
       }
       
-      const volatility = price * 0.0015; // Ajuste de volatilidade para HK50
+      const volatility = price * 0.0018;
       
       setAnalysis({
         existeEntrada,
         direcao,
         timeframe: selectedTF,
-        tipoCenario: !existeEntrada ? 'nenhum' : (direcao === 'compra' ? 'rompimento' : 'reversão'),
+        tipoCenario: !existeEntrada ? 'Mercado em Range' : (direcao === 'compra' ? 'Rompimento de Estrutura' : 'Reversão de Tendência'),
         justificativa: !existeEntrada 
-          ? "O preço está preso em uma zona de briga (Range). Não há vácuo livre suficiente para uma operação segura. Lembre-se: Range é pique-esconde."
+          ? "O preço está lateralizado entre zonas de briga. Não há vácuo livre para buscar um alvo de 2:1. Operar aqui é jogar contra a probabilidade."
           : direcao === 'compra'
-            ? `Identificado fechamento de corpo acima da região de valor em ${selectedTF}. Vácuo livre detectado até o próximo nível institucional.`
-            : `Exaustão de movimento detectada. O preço falhou em romper o topo anterior e apresenta gatilho de venda para buscar a liquidez inferior.`,
+            ? "Fechamento de corpo confirmado acima da zona de liquidez. O vácuo livre está aberto até o próximo nível institucional, sem barreiras imediatas."
+            : "Exaustão de movimento detectada no topo. O preço falhou em renovar máxima e fechou corpo abaixo do suporte imediato, abrindo vácuo para a base.",
+        logicaEstrutural: !existeEntrada
+          ? "Acúmulo de ordens sem direção definida. O preço precisa romper e fechar corpo fora desta caixa para validar um movimento."
+          : direcao === 'compra'
+            ? "A estrutura de alta foi validada pelo rompimento do último topo com volume. O vácuo livre identificado permite uma projeção limpa."
+            : "Quebra de estrutura (BOS) identificada. O preço mudou o caráter do movimento (CHoCH) e agora busca liquidez em níveis inferiores.",
+        planoGerenciamento: !existeEntrada
+          ? "Ficar de fora. O melhor trade agora é a preservação de capital até que o vácuo livre se apresente."
+          : "Entrada no fechamento do candle atual. Mover para Break Even assim que atingir 50% do vácuo livre. Alvo final em 80% do vácuo.",
         entrada: existeEntrada ? price.toFixed(2) : "---",
         stop: existeEntrada 
           ? (direcao === 'compra' ? (price - volatility).toFixed(2) : (price + volatility).toFixed(2))
           : "---",
         alvo: existeEntrada 
-          ? (direcao === 'compra' ? (price + (volatility * 2.2)).toFixed(2) : (price - (volatility * 2.2)).toFixed(2))
+          ? (direcao === 'compra' ? (price + (volatility * 2.4)).toFixed(2) : (price - (volatility * 2.4)).toFixed(2))
           : "---",
-        contexto: !existeEntrada ? "Mercado Lateral / Sem Tendência Clara" : `Estrutura de ${direcao === 'compra' ? 'Alta' : 'Baixa'} em ${selectedTF}.`,
+        vacuoLivrePorcentagem: existeEntrada ? Math.floor(Math.random() * 30) + 70 : 0,
+        contexto: !existeEntrada ? "Consolidação Lateral" : `Tendência de ${direcao === 'compra' ? 'Alta' : 'Baixa'} em ${selectedTF}.`,
         regioesImportantes: [
           `Suporte: ${(price - volatility * 2).toFixed(2)}`,
           `Resistência: ${(price + volatility * 2).toFixed(2)}`,
-          'Zona de Liquidez Detectada',
-          'Pavio de Exaustão Identificado'
+          'Zona de Liquidez Institucional',
+          'Gap de Valor Justo (FVG)'
         ],
         contextoHTF: {
           tf: "H4 / Diário",
           analise: direcao === 'venda' 
-            ? 'Tendência macro de baixa, favorecendo operações de venda na exaustão.'
-            : 'Tendência macro de alta, buscando correções para novas entradas.'
+            ? 'O gráfico diário mostra uma zona de oferta forte, corroborando com a venda no tempo menor.'
+            : 'A tendência macro é de alta, o que aumenta a probabilidade deste rompimento em tempo menor.'
         },
         checklist: {
           fechamentoCorpo: existeEntrada,
           vacuoLivre: existeEntrada,
           stopEstrutural: existeEntrada,
-          tendenciaConfirmada: randomFactor > 0.5
+          tendenciaConfirmada: randomFactor > 0.4
         }
       });
       
       setIsAnalyzing(false);
-      if (existeEntrada) {
-        showSuccess(`Análise concluída: Sinal de ${direcao.toUpperCase()} detectado.`);
-      } else {
-        showSuccess("Análise concluída: Sem entrada clara no momento.");
-      }
-    }, 2000);
+      showSuccess(existeEntrada ? `Análise Elite concluída: ${direcao.toUpperCase()}` : "Análise concluída: Aguardar oportunidade.");
+    }, 2500);
   };
 
   const clearImage = () => {
